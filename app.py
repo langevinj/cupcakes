@@ -1,5 +1,5 @@
 """Flask app for Cupcakes"""
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from models import db, connect_db, Cupcake
 
 app = Flask(__name__)
@@ -20,6 +20,25 @@ def serialize_cupcake(cupcake):
         "image": cupcake.image,
     }
 
+@app.route('/')
+def home_page():
+    """Render page with list of cupcakes and a form to add new ones"""
+    cupcakes = Cupcake.query.all()
+
+    return render_template('index.html', cupcakes=cupcakes)
+
+
+@app.route('/filter')
+def list_filtered_cupcakes():
+    """Return JSON {'cupcakes' : [{id, flavor, size, rating, image}, ...]} for cupcakes that match filter"""
+
+    searchterm = request.args["searchterm"]
+    filtered = Cupcake.query.filter(Cupcake.flavor.ilike(f'%{searchterm}%')).all()
+
+    return render_template('index.html', cupcakes=filtered)
+    #end filtered cupcakes
+    
+
 @app.route('/api/cupcakes')
 def list_all_cupcakes():
     """Return JSON {'cupcakes' : [{id, flavor, size, rating, image}, ...]}"""
@@ -34,7 +53,7 @@ def list_all_cupcakes():
 def list_single_cupcake(cupcake_id):
     """Return JSON {'cupcake' : {id, flavor, size, rating, image}}"""
 
-    cupcake = Cupcake.query.get(cupcake_id)
+    cupcake = Cupcake.query.get_or_404(cupcake_id)
     serialized = serialize_cupcake(cupcake)
 
     return jsonify(cupcake=serialized)
@@ -47,7 +66,10 @@ def create_cupcake():
     flavor = request.json["flavor"]
     size = request.json["size"]
     rating = request.json["rating"]
-    image = request.json["image"]
+    if request.json["image"]:
+        image = request.json["image"]
+    else:
+        image = None
 
     new_cupcake = Cupcake(flavor=flavor, size=size, rating=rating, image=image)
 

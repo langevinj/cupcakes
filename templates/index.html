@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Cupcakes{% endblock %}
+
+{% block content %}
+<h1>Cupcakes</h1>
+<form action="/filter">
+    Search: <input type="text" name="searchterm" class="searchterm"><button class="searchsubmit">Search</button>
+</form>
+<ul>
+    {% for cupcake in cupcakes %}
+    <li class="cupcake">{{cupcake.flavor}}    <button data-id="{{cupcake.id}}" class='delete-cupcake'>X</button></li>
+    <br>
+    {% endfor %}
+</ul>
+<form id="new-cupcake">
+    Flavor: <input type="text" name="flavor" id="flavor">
+    <br>
+    Size: <input type="text" name="size" id="size">
+    <br>
+    Rating: <input type="text" name="rating" id="rating" placeholder="1-10">
+    <br>
+    Image: <input type="text" name="image" id="image">
+    <br>
+    <button class="create-cupcake">Create Cupcake</button>
+</form>
+
+
+{% endblock %}

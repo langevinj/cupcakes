@@ -23,4 +23,5 @@ class Cupcake(db.Model):
     rating = db.Column(db.Float, nullable=False)
     image = db.Column(db.Text, nullable=False, default=DEFAULT_IMAGE_URL)
 
-    
+    def __repr__(self):
+        return f"<Cupcake flavor= {self.flavor} size= {self.size}>"
